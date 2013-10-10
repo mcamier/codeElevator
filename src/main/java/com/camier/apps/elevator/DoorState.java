@@ -1,15 +1,7 @@
-/**
- * 
- */
 package com.camier.apps.elevator;
 
-/**
- * @author fufuuu
- *
- */
-public enum Direction {
-	UP,
-	DOWN;
+public enum DoorState {
+	OPEN, CLOSE;
 	
 	public String toString() {
 		return name().toString();
