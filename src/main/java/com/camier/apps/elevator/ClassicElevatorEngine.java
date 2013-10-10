@@ -16,11 +16,14 @@ public class ClassicElevatorEngine
 	private int currentFloor;
 	private boolean isDoorOpened;
 	private int[] floorsIntended;
-
-	public ClassicElevatorEngine() {
-		reset();
-	}
+	private final int totalFloors;
 	
+	private int i;
+	
+	public ClassicElevatorEngine(final int _totalFloors) {
+		reset();
+		totalFloors = _totalFloors;
+	}
 	
 	public final LinkedList<Call> getCallPool() {
 		return callPool;
@@ -30,12 +33,10 @@ public class ClassicElevatorEngine
 		this.callPool = callPool;
 	}
 	
-	@Override
 	public final int getCurrentFloor() {
 		return currentFloor;
 	}
 	
-	@Override
 	public final void setCurrentFloor(final int currentPosition) {
 		this.currentFloor = currentPosition;
 	}
@@ -45,17 +46,14 @@ public class ClassicElevatorEngine
 		this.getCallPool().addLast(call);
 	}
 	
-	@Override
 	public boolean isDoorOpened() {
 		return isDoorOpened;
 	}
 	
-	@Override
 	public void closeDoor() {
 		this.isDoorOpened = false;
 	}
 	
-	@Override
 	public void openDoor() {
 		this.isDoorOpened = true;
 	}
@@ -66,14 +64,13 @@ public class ClassicElevatorEngine
 		setCallPool(new LinkedList<Call>());
 		setCurrentFloor(1);
 		closeDoor();
-		floorsIntended = new int[5];
-		floorsIntended[0] =
-		floorsIntended[1] =
-		floorsIntended[2] =
-		floorsIntended[3] =
-		floorsIntended[4] = 0;
+		floorsIntended = new int[totalFloors];
+		for(int i = 0 ; i < totalFloors ; i++) {
+			floorsIntended[i] = 0;
+		}
+		i = 1;
 	}
-
+	
 	@Override
 	public Command getNextCommand() {
 		if(isDoorOpened()) {
@@ -99,9 +96,8 @@ public class ClassicElevatorEngine
 		}
 	}
 
-
 	@Override
 	public void goTo(int floor) {
-		++(floorsIntended[floor-1]);
+		++(floorsIntended[floor]);
 	}
 }

@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ElevatorServlet 
 	extends HttpServlet {
 
-	private final static IElevatorEngine engine = new ClassicElevatorEngine();
+	private final static IElevatorEngine engine = new ClassicElevatorEngine(6);
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -27,29 +27,41 @@ public class ElevatorServlet
 		
 		String path = req.getRequestURI().substring(req.getContextPath().length() + 1);
 		
+		resp.setContentType("charset=UTF-8");
+		resp.setCharacterEncoding( "UTF-8" );
+		resp.setStatus(200);
+		
 		switch (path) {
 		case "reset":
+			System.out.println("<==== event reset ");
 			engine.reset();			
 			break;
 		
 		case "go":
+			System.out.println("<==== event go to " + req.getParameter("floorToGo"));
 			engine.goTo(Integer.parseInt(req.getParameter("floorToGo")));
 			break;
 		
 		case "call":
+			System.out.println("<==== event call from " + req.getParameter("atFloor") + " to " + req.getParameter("to"));
 			int atFloor = Integer.parseInt(req.getParameter("atFloor"));
 			Direction toGo = (req.getParameter("to") == "UP") ? Direction.UP : Direction.DOWN; 
 			engine.call(new Call(atFloor, toGo));
 			break;
-		
+			
 		case "userHasEntered":
+			System.out.println("<==== event userHasEntered");
 			break;
 
 		case "userHasExited":
-			
+			System.out.println("<==== event userHasExited");
 			break;
 		
 		case "nextCommand":
+			Command command = engine.getNextCommand();
+			System.out.println("====> " + command);
+			PrintWriter out = resp.getWriter();
+			out.println(command);
 			break;
 		
 		default:
@@ -57,11 +69,8 @@ public class ElevatorServlet
 			break;
 		}
 		
-		resp.setContentType("charset=UTF-8");
-		resp.setCharacterEncoding( "UTF-8" );
-		resp.setStatus(200);
-		PrintWriter out = resp.getWriter();
-		out.println(engine.getNextCommand());
+		
+		
 	}
 	
 }
