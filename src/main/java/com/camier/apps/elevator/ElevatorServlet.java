@@ -68,9 +68,5 @@ public class ElevatorServlet
 			resp.setStatus(404);
 			break;
 		}
-		
-		
-		
 	}
-	
 }

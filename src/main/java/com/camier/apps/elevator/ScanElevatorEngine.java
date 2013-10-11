@@ -16,43 +16,66 @@ public class ScanElevatorEngine
 
 	private Set<Call> pendingCalls;
 	private Set<Call> processingCalls;
-	private int currentFloor;
-	private boolean isDoorOpened;
-	private int[] floorsIntended;
-	private final int totalFloors;
-	private int farthestDestination;
-	
+
 	private Direction lastDirection;
 	
+	private final int totalFloors;
+	private int farthestDestination;
+	private int currentFloor;
+	private int[] floorsIntended;
 	
+	private boolean isDoorOpened;
+	
+	
+	/** Initialize the elevator for a specific amount of floors
+	 * @param _totalFloors
+	 */
 	public ScanElevatorEngine(final int _totalFloors) {
 		totalFloors = _totalFloors;
 		reset();
 	}
 	
+	/**
+	 * @return
+	 */
 	public final int getCurrentFloor() {
 		return currentFloor;
 	}
 	
+	/**
+	 * @param currentPosition
+	 */
 	public final void setCurrentFloor(final int currentPosition) {
 		this.currentFloor = currentPosition;
 	}
 	
+	/**
+	 * @return
+	 */
 	public boolean isDoorOpened() {
 		return isDoorOpened;
 	}
 	
-	private Command closeDoor() {
+	/**
+	 * @return
+	 */
+	public Command closeDoor() {
 		this.isDoorOpened = false;
 		return Command.CLOSE;
 	}
 	
-	private Command openDoor() {
+	/**
+	 * @return
+	 */
+	public Command openDoor() {
 		this.isDoorOpened = true;
 		return Command.OPEN;
 	}
 	
-	private Command goUp() {
+	/**
+	 * @return
+	 */
+	public Command goUp() {
 		if (isDoorOpened()) {
 			return closeDoor();
 		}
@@ -65,7 +88,10 @@ public class ScanElevatorEngine
 		return Command.NOTHING;
 	}
 	
-	private Command goDown() {
+	/**
+	 * @return
+	 */
+	public Command goDown() {
 		if (isDoorOpened()) {
 			return closeDoor();
 		}
@@ -78,7 +104,11 @@ public class ScanElevatorEngine
 		return Command.NOTHING;
 	}
 	
-	private boolean isCallOnMyWay(Call call) {
+	/**
+	 * @param call
+	 * @return
+	 */
+	public boolean isCallOnMyWay(Call call) {
 		if(lastDirection != null) {
 			if( currentFloor < call.getFromFloor() ) {
 				return (lastDirection == Direction.UP) ? true : false;
@@ -90,6 +120,30 @@ public class ScanElevatorEngine
 		}
 	}
 
+
+	/**
+	 * @return
+	 */
+	public boolean isCurrentFloorATarget() {
+		return (floorsIntended[currentFloor] > 0) ? true : false;
+	}
+	
+	public boolean isCurrentFloorHasCall() {
+		for(Iterator<Call> callIter = processingCalls.iterator() ; callIter.hasNext();) {
+			Call c = callIter.next();
+			if(c.getFromFloor() == currentFloor) return true;
+		}
+		for(Iterator<Call> callIter = pendingCalls.iterator() ; callIter.hasNext();) {
+			Call c = callIter.next();
+			if(c.getFromFloor() == currentFloor) return true;
+		}
+		return false;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see com.camier.apps.elevator.IElevatorEngine#call(com.camier.apps.elevator.Call)
+	 */
 	@Override
 	public void call(Call call) {
 		if(isCallOnMyWay(call)) {
@@ -99,11 +153,11 @@ public class ScanElevatorEngine
 			pendingCalls.add(call);
 		}
 	}
-
-	private boolean isCurrentFloorATarget() {
-		return (floorsIntended[currentFloor] > 0) ? true : false;
-	}
 	
+	
+	/* (non-Javadoc)
+	 * @see com.camier.apps.elevator.IElevatorEngine#reset()
+	 */
 	@Override
 	public void reset() {
 		pendingCalls = new HashSet<Call>();
@@ -118,10 +172,19 @@ public class ScanElevatorEngine
 		farthestDestination = -1;
 	}
 	
-	private void swapDirection() {
-		lastDirection = (lastDirection == Direction.DOWN ) ? Direction.UP : Direction.DOWN; 
+	
+	/* (non-Javadoc)
+	 * @see com.camier.apps.elevator.IElevatorEngine#haveToGoTo(int)
+	 */
+	@Override
+	public void haveToGoTo(final int floor) {
+		++(floorsIntended[floor]);
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see com.camier.apps.elevator.IElevatorEngine#getNextCommand()
+	 */
 	@Override
 	public Command getNextCommand() {
 		if (isDoorOpened()) {
@@ -141,23 +204,29 @@ public class ScanElevatorEngine
 				swapDirection();
 				farthestDestination = findFarthestDestination(processingCalls);
 			} 
-			else {
-				int remains = 0;
-				for(int i = (totalFloors-1) ; i > -1 ; i-- ) {
-					remains += floorsIntended[i];
-				}
-				if(remains > 0) {
-					for(int i = (totalFloors-1) ; i > -1 ; i-- ) {
-						farthestDestination = (floorsIntended[i] > 0) ? i : farthestDestination;
-					}
-					lastDirection = (farthestDestination > currentFloor) ? Direction.UP : Direction.DOWN; 
-				}
-			}
+//			else {
+//				int remains = 0;
+//				for(int i = (totalFloors-1) ; i > -1 ; i-- ) {
+//					remains += floorsIntended[i];
+//				}
+//				if(remains > 0) {
+//					for(int i = (totalFloors-1) ; i > -1 ; i-- ) {
+//						farthestDestination = (floorsIntended[i] > 0) ? i : farthestDestination;
+//					}
+//					lastDirection = (farthestDestination > currentFloor) ? Direction.UP : Direction.DOWN; 
+//				}
+//			}
 		}
 		
 		if(processingCalls.size() <= 0) {
 			return Command.NOTHING;
 		} else {
+			
+			if(isCurrentFloorHasCall()) {
+				return openDoor();
+			}
+
+			//si chercher nouvelle destination
 			if(farthestDestination > currentFloor) {
 				return goUp();
 			} else if(farthestDestination < currentFloor) {
@@ -169,7 +238,12 @@ public class ScanElevatorEngine
 		}
 	}
 
-	private int findFarthestDestination(final Set<Call> calls) {
+	
+	/**
+	 * @param calls
+	 * @return
+	 */
+	public int findFarthestDestination(final Set<Call> calls) {
 		int farthest = currentFloor;
 		for(Iterator<Call> callIter = calls.iterator() ; callIter.hasNext();) {
 			Call c = callIter.next();
@@ -184,8 +258,11 @@ public class ScanElevatorEngine
 		return farthest;
 	}
 
-	@Override
-	public void haveToGoTo(final int floor) {
-		++(floorsIntended[floor]);
+	
+	/**
+	 * 
+	 */
+	public void swapDirection() {
+		lastDirection = (lastDirection == Direction.DOWN ) ? Direction.UP : Direction.DOWN; 
 	}
 }
