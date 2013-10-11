@@ -11,7 +11,7 @@ package com.camier.apps.elevator;
 public interface IElevatorEngine {
 
 	public void call(Call call);
-	public void goTo(int floor);
+	public void haveToGoTo(int floor);
 	public Command getNextCommand();
 	public void reset();
 }

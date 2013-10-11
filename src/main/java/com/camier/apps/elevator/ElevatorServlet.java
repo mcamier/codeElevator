@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ElevatorServlet 
 	extends HttpServlet {
 
-	private final static IElevatorEngine engine = new ClassicElevatorEngine(6);
+	private final static IElevatorEngine engine = new ScanElevatorEngine(6);
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -39,7 +39,7 @@ public class ElevatorServlet
 		
 		case "go":
 			System.out.println("<==== event go to " + req.getParameter("floorToGo"));
-			engine.goTo(Integer.parseInt(req.getParameter("floorToGo")));
+			engine.haveToGoTo(Integer.parseInt(req.getParameter("floorToGo")));
 			break;
 		
 		case "call":
