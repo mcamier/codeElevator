@@ -1,1 +1,1 @@
-web:	java -cp target:"target/dependency/*" com.mcamier.apps.elevator.Elevator
+web:	java -cp target/elevator.war:"target/dependency/*" com.mcamier.apps.elevator.Elevator
