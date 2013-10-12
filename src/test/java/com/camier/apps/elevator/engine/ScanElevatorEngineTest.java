@@ -1,11 +1,12 @@
 package com.camier.apps.elevator.engine;
 
-import junit.framework.Assert;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 
 import com.mcamier.apps.elevator.engine.ScanElevatorEngine;
-import com.mcamier.apps.elevator.request.Call;
+import com.mcamier.apps.elevator.request.CallRequest;
 import com.mcamier.apps.elevator.utils.Command;
 import com.mcamier.apps.elevator.utils.Direction;
 
@@ -19,36 +20,36 @@ public class ScanElevatorEngineTest {
 	public void mustGoUpAfterUniqueCallingTest() {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
 		elevator.setCurrentFloor(0);
-		elevator.call(new Call(5, Direction.DOWN));
+		elevator.call(new CallRequest(5, Direction.DOWN));
 		
-		Assert.assertEquals(Command.UP, elevator.getNextCommand());
+		assertThat(elevator.getNextCommand()).isEqualTo(Command.UP);
 	}
 	
 	@Test
 	public void mustDownUpUniqueCallingTest() {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
 		elevator.setCurrentFloor(5);
-		elevator.call(new Call(1, Direction.UP));
+		elevator.call(new CallRequest(1, Direction.UP));
 		
-		Assert.assertEquals(Command.DOWN, elevator.getNextCommand());
+		assertThat(elevator.getNextCommand()).isEqualTo(Command.DOWN);
 	}
 	
 	@Test
 	public void returnsCommandOpenWhenOpenOrderTest() {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
 		
-		Command result = elevator.openDoor();
-		Assert.assertEquals(Command.OPEN, result);
-		Assert.assertEquals(elevator.isDoorOpened(), true);
+		assertThat(elevator.openDoor()).isEqualTo(Command.OPEN);
+		assertThat(elevator.isDoorOpened()).isTrue();
 	}
 	
 	@Test
 	public void returnsCommandCloseWhenCloseOrderTest() {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
+		elevator.openDoor();
 		
 		Command result = elevator.closeDoor();
-		Assert.assertEquals(Command.CLOSE, result);
-		Assert.assertEquals(elevator.isDoorOpened(), false);
+		assertThat(elevator.closeDoor()).isEqualTo(Command.CLOSE);
+		assertThat(elevator.isDoorOpened()).isFalse();
 	}
 	
 	@Test
@@ -56,8 +57,7 @@ public class ScanElevatorEngineTest {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
 		elevator.openDoor();
 		
-		Command result = elevator.goUp();
-		Assert.assertEquals(Command.CLOSE, result);
+		assertThat(elevator.goUp()).isEqualTo(Command.CLOSE);
 	}
 	
 	@Test
@@ -65,7 +65,6 @@ public class ScanElevatorEngineTest {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
 		elevator.openDoor();
 		
-		Command result = elevator.goDown();
-		Assert.assertEquals(Command.CLOSE, result);
+		assertThat(elevator.goDown()).isEqualTo(Command.CLOSE);
 	}
 }

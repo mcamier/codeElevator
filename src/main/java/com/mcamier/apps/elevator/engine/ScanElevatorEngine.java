@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.mcamier.apps.elevator.request.Call;
+import com.mcamier.apps.elevator.request.CallRequest;
 import com.mcamier.apps.elevator.utils.Command;
 import com.mcamier.apps.elevator.utils.Direction;
 
@@ -18,8 +18,8 @@ import com.mcamier.apps.elevator.utils.Direction;
 public class ScanElevatorEngine 
 	implements IElevatorEngine {
 
-	private Set<Call> pendingCalls;
-	private Set<Call> processingCalls;
+	private Set<CallRequest> pendingCalls;
+	private Set<CallRequest> processingCalls;
 
 	private Direction lastDirection;
 	
@@ -112,9 +112,9 @@ public class ScanElevatorEngine
 	 * @param call
 	 * @return
 	 */
-	public boolean isCallOnMyWay(Call call) {
+	public boolean isCallOnMyWay(CallRequest call) {
 		if(lastDirection != null) {
-			if( currentFloor < call.getFromFloor() ) {
+			if( currentFloor < call.getFloor() ) {
 				return (lastDirection == Direction.UP) ? true : false;
 			} else {
 				return (lastDirection == Direction.DOWN) ? true : false;
@@ -133,13 +133,13 @@ public class ScanElevatorEngine
 	}
 	
 	public boolean isCurrentFloorHasCall() {
-		for(Iterator<Call> callIter = processingCalls.iterator() ; callIter.hasNext();) {
-			Call c = callIter.next();
-			if(c.getFromFloor() == currentFloor) return true;
+		for(Iterator<CallRequest> callIter = processingCalls.iterator() ; callIter.hasNext();) {
+			CallRequest c = callIter.next();
+			if(c.getFloor() == currentFloor) return true;
 		}
-		for(Iterator<Call> callIter = pendingCalls.iterator() ; callIter.hasNext();) {
-			Call c = callIter.next();
-			if(c.getFromFloor() == currentFloor) return true;
+		for(Iterator<CallRequest> callIter = pendingCalls.iterator() ; callIter.hasNext();) {
+			CallRequest c = callIter.next();
+			if(c.getFloor() == currentFloor) return true;
 		}
 		return false;
 	}
@@ -149,9 +149,9 @@ public class ScanElevatorEngine
 	 * @see com.camier.apps.elevator.IElevatorEngine#call(com.camier.apps.elevator.Call)
 	 */
 	@Override
-	public void call(Call call) {
+	public void call(CallRequest call) {
 		if(isCallOnMyWay(call)) {
-			farthestDestination = (farthestDestination <= call.getFromFloor()) ? call.getFromFloor() : farthestDestination;
+			farthestDestination = (farthestDestination <= call.getFloor()) ? call.getFloor() : farthestDestination;
 			processingCalls.add(call);
 		} else {
 			pendingCalls.add(call);
@@ -164,8 +164,8 @@ public class ScanElevatorEngine
 	 */
 	@Override
 	public void reset() {
-		pendingCalls = new HashSet<Call>();
-		processingCalls = new HashSet<Call>();
+		pendingCalls = new HashSet<CallRequest>();
+		processingCalls = new HashSet<CallRequest>();
 		lastDirection = null;
 		setCurrentFloor(0);
 		closeDoor();
@@ -204,7 +204,7 @@ public class ScanElevatorEngine
 		if(processingCalls.isEmpty()) {
 			if(!(pendingCalls.isEmpty())) {
 				processingCalls = pendingCalls;
-				pendingCalls = new HashSet<Call>();
+				pendingCalls = new HashSet<CallRequest>();
 				swapDirection();
 				farthestDestination = findFarthestDestination(processingCalls);
 			} 
@@ -247,15 +247,15 @@ public class ScanElevatorEngine
 	 * @param calls
 	 * @return
 	 */
-	public int findFarthestDestination(final Set<Call> calls) {
+	public int findFarthestDestination(final Set<CallRequest> calls) {
 		int farthest = currentFloor;
-		for(Iterator<Call> callIter = calls.iterator() ; callIter.hasNext();) {
-			Call c = callIter.next();
+		for(Iterator<CallRequest> callIter = calls.iterator() ; callIter.hasNext();) {
+			CallRequest c = callIter.next();
 			if(isCallOnMyWay(c)) {
 				if(lastDirection == Direction.UP) {
-					farthest = (c.getFromFloor() > farthest) ? c.getFromFloor() : farthest;
+					farthest = (c.getFloor() > farthest) ? c.getFloor() : farthest;
 				} else {
-					farthest = (c.getFromFloor() < farthest) ? c.getFromFloor() : farthest;
+					farthest = (c.getFloor() < farthest) ? c.getFloor() : farthest;
 				}
 			}
 		}

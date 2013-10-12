@@ -3,7 +3,7 @@
  */
 package com.mcamier.apps.elevator.engine;
 
-import com.mcamier.apps.elevator.request.Call;
+import com.mcamier.apps.elevator.request.CallRequest;
 import com.mcamier.apps.elevator.utils.Command;
 
 
@@ -16,7 +16,7 @@ public interface IElevatorEngine {
 	/** Call the elevator from a specific floor to a requested direction
 	 * @param call
 	 */
-	public void call(Call call);
+	public void call(CallRequest call);
 	
 	/** Register a floor requested by an entered user
 	 * @param floor
