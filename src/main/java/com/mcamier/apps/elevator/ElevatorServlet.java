@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.mcamier.apps.elevator.engine.IElevatorEngine;
 import com.mcamier.apps.elevator.engine.ScanElevatorEngine;
 import com.mcamier.apps.elevator.request.CallRequest;
+import com.mcamier.apps.elevator.request.DestinationRequest;
 import com.mcamier.apps.elevator.utils.Command;
 import com.mcamier.apps.elevator.utils.Direction;
 
@@ -40,18 +41,21 @@ public class ElevatorServlet
 		switch (path) {
 		case "reset":
 			System.out.println("<==== event reset ");
+			
 			engine.reset();			
 			break;
 		
 		case "go":
 			System.out.println("<==== event go to " + req.getParameter("floorToGo"));
-			engine.haveToGoTo(Integer.parseInt(req.getParameter("floorToGo")));
+			
+			engine.haveToGoTo(new DestinationRequest(Integer.parseInt(req.getParameter("floorToGo"))));
 			break;
 		
 		case "call":
 			System.out.println("<==== event call from " + req.getParameter("atFloor") + " to " + req.getParameter("to"));
 			int atFloor = Integer.parseInt(req.getParameter("atFloor"));
 			Direction toGo = (req.getParameter("to") == "UP") ? Direction.UP : Direction.DOWN; 
+			
 			engine.call(new CallRequest(atFloor, toGo));
 			break;
 			

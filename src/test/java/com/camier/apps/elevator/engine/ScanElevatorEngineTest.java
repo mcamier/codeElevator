@@ -20,6 +20,7 @@ public class ScanElevatorEngineTest {
 	public void mustGoUpAfterUniqueCallingTest() {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
 		elevator.setCurrentFloor(0);
+		elevator.closeDoor();
 		elevator.call(new CallRequest(5, Direction.DOWN));
 		
 		assertThat(elevator.getNextCommand()).isEqualTo(Command.UP);
@@ -29,6 +30,7 @@ public class ScanElevatorEngineTest {
 	public void mustDownUpUniqueCallingTest() {
 		ScanElevatorEngine elevator = new ScanElevatorEngine(6);
 		elevator.setCurrentFloor(5);
+		elevator.closeDoor();
 		elevator.call(new CallRequest(1, Direction.UP));
 		
 		assertThat(elevator.getNextCommand()).isEqualTo(Command.DOWN);

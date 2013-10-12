@@ -8,7 +8,7 @@
  
  	<servlet>
  		<servlet-name>elevator</servlet-name>
- 		<servlet-class>com.camier.apps.elevator.ElevatorServlet</servlet-class>
+ 		<servlet-class>com.mcamier.apps.elevator.ElevatorServlet</servlet-class>
  		
  		<init-param>
  			<param-name>auteur</param-name>

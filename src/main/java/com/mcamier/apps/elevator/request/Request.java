@@ -16,10 +16,12 @@ public abstract class Request implements IRequest {
 	 */
 	private int atFloor;
 	
+	
 	public Request(final int atFloor) {
 		this.setFloor(atFloor);
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see com.mcamier.apps.elevator.request.IRequest#getFloor()
 	 */
@@ -28,10 +30,15 @@ public abstract class Request implements IRequest {
 		return atFloor;
 	}
 	
+	
+	/**
+	 * @param aFloor
+	 */
 	protected final void setFloor(final int aFloor) {
 		this.atFloor = aFloor;
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see com.mcamier.apps.elevator.request.IRequest#directionFrom(int)
 	 */
@@ -44,6 +51,7 @@ public abstract class Request implements IRequest {
 		}
 		return Direction.NONE;
 	}
+	
 	
 	/* (non-Javadoc)
 	 * @see com.mcamier.apps.elevator.request.IRequest#isReachableWithDirection(com.mcamier.apps.elevator.utils.Direction)

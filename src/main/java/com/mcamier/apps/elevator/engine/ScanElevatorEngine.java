@@ -3,11 +3,9 @@
  */
 package com.mcamier.apps.elevator.engine;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.mcamier.apps.elevator.request.CallRequest;
+import com.mcamier.apps.elevator.request.DestinationRequest;
+import com.mcamier.apps.elevator.request.IRequest;
 import com.mcamier.apps.elevator.utils.Command;
 import com.mcamier.apps.elevator.utils.Direction;
 
@@ -18,17 +16,13 @@ import com.mcamier.apps.elevator.utils.Direction;
 public class ScanElevatorEngine 
 	implements IElevatorEngine {
 
-	private Set<CallRequest> pendingCalls;
-	private Set<CallRequest> processingCalls;
-
+	private final int totalFloors;
+	private int currentFloor;
+	private boolean isDoorOpened;
+	
 	private Direction lastDirection;
 	
-	private final int totalFloors;
-	private int farthestDestination;
-	private int currentFloor;
-	private int[] floorsIntended;
-	
-	private boolean isDoorOpened;
+	private CallPool callPool;
 	
 	
 	/** Initialize the elevator for a specific amount of floors
@@ -36,8 +30,10 @@ public class ScanElevatorEngine
 	 */
 	public ScanElevatorEngine(final int _totalFloors) {
 		totalFloors = _totalFloors;
+		callPool = new CallPool();
 		reset();
 	}
+	
 	
 	/**
 	 * @return
@@ -46,6 +42,7 @@ public class ScanElevatorEngine
 		return currentFloor;
 	}
 	
+	
 	/**
 	 * @param currentPosition
 	 */
@@ -53,12 +50,14 @@ public class ScanElevatorEngine
 		this.currentFloor = currentPosition;
 	}
 	
+	
 	/**
 	 * @return
 	 */
 	public boolean isDoorOpened() {
 		return isDoorOpened;
 	}
+	
 	
 	/**
 	 * @return
@@ -68,6 +67,7 @@ public class ScanElevatorEngine
 		return Command.CLOSE;
 	}
 	
+	
 	/**
 	 * @return
 	 */
@@ -75,6 +75,7 @@ public class ScanElevatorEngine
 		this.isDoorOpened = true;
 		return Command.OPEN;
 	}
+	
 	
 	/**
 	 * @return
@@ -92,6 +93,7 @@ public class ScanElevatorEngine
 		return Command.NOTHING;
 	}
 	
+	
 	/**
 	 * @return
 	 */
@@ -108,165 +110,100 @@ public class ScanElevatorEngine
 		return Command.NOTHING;
 	}
 	
-	/**
-	 * @param call
-	 * @return
-	 */
-	public boolean isCallOnMyWay(CallRequest call) {
-		if(lastDirection != null) {
-			if( currentFloor < call.getFloor() ) {
-				return (lastDirection == Direction.UP) ? true : false;
-			} else {
-				return (lastDirection == Direction.DOWN) ? true : false;
-			}
-		} else {
-			return true;
-		}
-	}
 
-
-	/**
-	 * @return
-	 */
-	public boolean isCurrentFloorATarget() {
-		return (floorsIntended[currentFloor] > 0) ? true : false;
-	}
-	
-	public boolean isCurrentFloorHasCall() {
-		for(Iterator<CallRequest> callIter = processingCalls.iterator() ; callIter.hasNext();) {
-			CallRequest c = callIter.next();
-			if(c.getFloor() == currentFloor) return true;
-		}
-		for(Iterator<CallRequest> callIter = pendingCalls.iterator() ; callIter.hasNext();) {
-			CallRequest c = callIter.next();
-			if(c.getFloor() == currentFloor) return true;
-		}
-		return false;
-	}
-	
-	
 	/* (non-Javadoc)
-	 * @see com.camier.apps.elevator.IElevatorEngine#call(com.camier.apps.elevator.Call)
+	 * @see com.mcamier.apps.elevator.IElevatorEngine#call(com.camier.apps.elevator.Call)
 	 */
 	@Override
-	public void call(CallRequest call) {
-		if(isCallOnMyWay(call)) {
-			farthestDestination = (farthestDestination <= call.getFloor()) ? call.getFloor() : farthestDestination;
-			processingCalls.add(call);
-		} else {
-			pendingCalls.add(call);
-		}
+	public void call(final CallRequest call) {
+		callPool.add(call);
 	}
 	
 	
 	/* (non-Javadoc)
-	 * @see com.camier.apps.elevator.IElevatorEngine#reset()
+	 * @see com.mcamier.apps.elevator.IElevatorEngine#haveToGoTo(int)
+	 */
+	@Override
+	public void haveToGoTo(final DestinationRequest dest) {
+		callPool.add(dest);
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see com.mcamier.apps.elevator.IElevatorEngine#reset()
 	 */
 	@Override
 	public void reset() {
-		pendingCalls = new HashSet<CallRequest>();
-		processingCalls = new HashSet<CallRequest>();
-		lastDirection = null;
+		lastDirection = Direction.NONE;
+		callPool.clear();
 		setCurrentFloor(0);
 		closeDoor();
-		floorsIntended = new int[totalFloors];
-		for(int i = 0 ; i < totalFloors ; i++) {
-			floorsIntended[i] = 0;
-		}
-		farthestDestination = -1;
 	}
 	
 	
 	/* (non-Javadoc)
-	 * @see com.camier.apps.elevator.IElevatorEngine#haveToGoTo(int)
+	 * @see com.mcamier.apps.elevator.engine.IElevatorEngine#getNextCommand()
 	 */
 	@Override
-	public void haveToGoTo(final int floor) {
-		++(floorsIntended[floor]);
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see com.camier.apps.elevator.IElevatorEngine#getNextCommand()
-	 */
-	@Override
-	public Command getNextCommand() {
-		if (isDoorOpened()) {
+	public final Command getNextCommand() {
+		if(isDoorOpened()) {
 			return closeDoor();
 		}
-		
-		if(isCurrentFloorATarget()) {
-			floorsIntended[currentFloor] = 0;
-			return openDoor();
-		}
-
-		// this part below freaks me out, i gonna see it later because its doesnt works as well
-		if(processingCalls.isEmpty()) {
-			if(!(pendingCalls.isEmpty())) {
-				processingCalls = pendingCalls;
-				pendingCalls = new HashSet<CallRequest>();
-				swapDirection();
-				farthestDestination = findFarthestDestination(processingCalls);
-			} 
-//			else {
-//				int remains = 0;
-//				for(int i = (totalFloors-1) ; i > -1 ; i-- ) {
-//					remains += floorsIntended[i];
-//				}
-//				if(remains > 0) {
-//					for(int i = (totalFloors-1) ; i > -1 ; i-- ) {
-//						farthestDestination = (floorsIntended[i] > 0) ? i : farthestDestination;
-//					}
-//					lastDirection = (farthestDestination > currentFloor) ? Direction.UP : Direction.DOWN; 
-//				}
-//			}
-		}
-		
-		if(processingCalls.size() <= 0) {
-			return Command.NOTHING;
-		} else {
-			
-			if(isCurrentFloorHasCall()) {
-				return openDoor();
-			}
-
-			//si chercher nouvelle destination
-			if(farthestDestination > currentFloor) {
-				return goUp();
-			} else if(farthestDestination < currentFloor) {
-				return goDown();
-			} else {
-				processingCalls.remove(processingCalls.size()-1);
-				return openDoor();	
-			}
-		}
+		return computeNextCommand();
 	}
 
-	
+
 	/**
-	 * @param calls
 	 * @return
 	 */
-	public int findFarthestDestination(final Set<CallRequest> calls) {
-		int farthest = currentFloor;
-		for(Iterator<CallRequest> callIter = calls.iterator() ; callIter.hasNext();) {
-			CallRequest c = callIter.next();
-			if(isCallOnMyWay(c)) {
-				if(lastDirection == Direction.UP) {
-					farthest = (c.getFloor() > farthest) ? c.getFloor() : farthest;
-				} else {
-					farthest = (c.getFloor() < farthest) ? c.getFloor() : farthest;
-				}
+	private Command computeNextCommand() {
+		if( !callPool.isEmpty() ) {
+			if (callPool.isRequestAt(currentFloor) ) {
+				callPool.removeRequestsAt(currentFloor);
+				return openDoor();
+			}
+			
+			IRequest targetRequest = getATarget();
+		
+			if( targetRequest.getFloor() > currentFloor ) {
+				return goUp();
+			} else if( targetRequest.getFloor() < currentFloor ) {
+				return goDown();
 			}
 		}
-		return farthest;
+		
+		return Command.NOTHING;
 	}
-
+	
 	
 	/**
-	 * 
+	 * @return
 	 */
-	public void swapDirection() {
-		lastDirection = (lastDirection == Direction.DOWN ) ? Direction.UP : Direction.DOWN; 
+	private IRequest getATarget() {
+		IRequest targetFloor = null;
+		
+		switch (lastDirection) {
+		case NONE:
+			targetFloor = callPool.get(0);
+			break;
+
+		case UP:
+			targetFloor = callPool.getHigherRequestThan(currentFloor);
+			if(targetFloor.getFloor() == currentFloor ) {
+				targetFloor = callPool.getLowerRequestThan(currentFloor);
+			}
+			break;
+
+		case DOWN:
+			targetFloor = callPool.getLowerRequestThan(currentFloor);
+			if(targetFloor.getFloor() == currentFloor ) {
+				targetFloor = callPool.getHigherRequestThan(currentFloor);
+			}
+			break;
+
+		default:
+			break;
+		}
+		return targetFloor;
 	}
 }
