@@ -31,6 +31,14 @@ public class Elevator {
 	public static void lauchElevatorServer(int port) {
 		setPort(port);
 		
+		get(new Route("/") {
+			@Override
+			public Object handle(Request request, Response response) {
+				response.status(200);
+				return response;
+			}
+		});
+		
 		get(new Route("/reset") {
 			@Override
 			public Object handle(Request request, Response response) {
