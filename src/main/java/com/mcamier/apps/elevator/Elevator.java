@@ -21,9 +21,10 @@ import com.mcamier.apps.elevator.utils.Direction;
  */
 public class Elevator {
 	
-	private final static IElevatorEngine engine = new ScanElevatorEngine(6);
+	private static IElevatorEngine engine;
 
 	public static void main(String[] args) {
+		engine = new ScanElevatorEngine(6);
 		lauchElevatorServer(8000);
 	}
 	
@@ -33,6 +34,7 @@ public class Elevator {
 		get(new Route("/reset") {
 			@Override
 			public Object handle(Request request, Response response) {
+				System.out.println("<==== reset");
 				engine.reset();
 				response.status(200);
 				return response;
@@ -42,7 +44,8 @@ public class Elevator {
 		get(new Route("/go") {
 			@Override
 			public Object handle(Request request, Response response) {
-				engine.haveToGoTo(new DestinationRequest(Integer.parseInt(request.params("floorToGo"))));
+				System.out.println("<==== go");
+				engine.haveToGoTo(new DestinationRequest(Integer.parseInt(request.queryParams("floorToGo"))));
 				response.status(200);
 				return response;
 			}
@@ -51,8 +54,9 @@ public class Elevator {
 		get(new Route("/call") {
 			@Override
 			public Object handle(Request request, Response response) {
-				int atFloor = Integer.parseInt(request.params("atFloor"));
-				Direction toGo = (request.params("to") == "UP") ? Direction.UP : Direction.DOWN; 
+				int atFloor = Integer.parseInt(request.queryParams("atFloor"));
+				Direction toGo = (request.queryParams("to") == "UP") ? Direction.UP : Direction.DOWN; 
+				System.out.println("<==== call " + atFloor + " " + toGo);
 				engine.call(new CallRequest(atFloor, toGo));
 				response.status(200);
 				return response;
@@ -62,6 +66,7 @@ public class Elevator {
 		get(new Route("/userHasEntered") {
 			@Override
 			public Object handle(Request request, Response response) {
+				System.out.println("<==== userHasEntered");
 				response.status(200);
 				return response;
 			}
@@ -70,6 +75,7 @@ public class Elevator {
 		get(new Route("/userHasExited") {
 			@Override
 			public Object handle(Request request, Response response) {
+				System.out.println("<==== userHasExited");
 				response.status(200);
 				return response;
 			}
@@ -78,6 +84,7 @@ public class Elevator {
 		get(new Route("/nextCommand") {
 			@Override
 			public Object handle(Request request, Response response) {
+				System.out.println("<==== nextCommand");
 				response.status(200);
 				return engine.getNextCommand();
 			}
