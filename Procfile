@@ -1,1 +1,1 @@
-web:	java -cp target/classes:target/dependency/* com.mcamier.apps.elevator.Elevator
+web:	java -cp target/elevator:target/dependency/* com.mcamier.apps.elevator.Elevator
