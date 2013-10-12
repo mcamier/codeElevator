@@ -1,7 +1,9 @@
 /**
  * 
  */
-package com.camier.apps.elevator;
+package com.mcamier.apps.elevator.request;
+
+import com.mcamier.apps.elevator.utils.Direction;
 
 /**
  * @author fufuuu

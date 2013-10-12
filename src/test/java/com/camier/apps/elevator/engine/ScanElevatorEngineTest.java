@@ -1,8 +1,13 @@
-package com.camier.apps.elevator;
+package com.camier.apps.elevator.engine;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
+
+import com.mcamier.apps.elevator.engine.ScanElevatorEngine;
+import com.mcamier.apps.elevator.request.Call;
+import com.mcamier.apps.elevator.utils.Command;
+import com.mcamier.apps.elevator.utils.Direction;
 
 public class ScanElevatorEngineTest {
 	
