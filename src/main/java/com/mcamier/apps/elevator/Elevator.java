@@ -25,7 +25,7 @@ public class Elevator {
 
 	public static void main(String[] args) {
 		engine = new ScanElevatorEngine(6);
-		lauchElevatorServer(8000);
+		lauchElevatorServer(5000);
 	}
 	
 	public static void lauchElevatorServer(int port) {
