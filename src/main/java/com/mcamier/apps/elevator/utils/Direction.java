@@ -9,7 +9,8 @@ package com.mcamier.apps.elevator.utils;
  */
 public enum Direction {
 	UP,
-	DOWN;
+	DOWN,
+	NONE;
 	
 	public String toString() {
 		return name().toString();

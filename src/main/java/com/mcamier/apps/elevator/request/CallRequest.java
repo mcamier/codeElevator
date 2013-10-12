@@ -17,7 +17,7 @@ public class CallRequest extends Request{
 	 * @param direction
 	 */
 	public CallRequest(final int fromFloor, final Direction direction) {
-		this.setFloor(fromFloor);
+		super(fromFloor);
 		this.setDirection(direction);
 	}
 	

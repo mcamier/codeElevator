@@ -9,4 +9,8 @@ package com.mcamier.apps.elevator.request;
  */
 public class DestinationRequest extends Request {
 
+	public DestinationRequest(int atFloor) {
+		super(atFloor);
+	}
+
 }
