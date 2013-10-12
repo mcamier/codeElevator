@@ -25,7 +25,7 @@ public class Elevator {
 
 	public static void main(String[] args) {
 		engine = new ScanElevatorEngine(6);
-		lauchElevatorServer(5000);
+		lauchElevatorServer(8666);
 	}
 	
 	public static void lauchElevatorServer(int port) {
@@ -62,9 +62,9 @@ public class Elevator {
 		get(new Route("/call") {
 			@Override
 			public Object handle(Request request, Response response) {
+				System.out.println("<==== call");
 				int atFloor = Integer.parseInt(request.queryParams("atFloor"));
-				Direction toGo = (request.queryParams("to") == "UP") ? Direction.UP : Direction.DOWN; 
-				System.out.println("<==== call " + atFloor + " " + toGo);
+				Direction toGo = Direction.valueOf(request.queryParams("to")); 
 				engine.call(new CallRequest(atFloor, toGo));
 				response.status(200);
 				return response;
