@@ -164,7 +164,7 @@ public final class CallPool {
 				}
 			} else if(Direction.DOWN == direction) {
 				if(request.getFloor() < index) {
-					result--;
+					result++;
 				}
 			}
 		}

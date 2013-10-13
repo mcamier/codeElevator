@@ -31,13 +31,14 @@ public class SmarterElevatorEngine extends ScanElevatorEngine {
 		
 			if( directionTargeted == Direction.UP) {
 				return goUp();
-			} else {
+			} else if( directionTargeted == Direction.DOWN) {
 				return goDown();
 			}
 		}
 		
 		return Command.NOTHING;
 	}
+	
 	
 	public Direction getPriority() {
 		int priorityUp = 0, priorityDown = 0, priorityTemp = 0;
@@ -54,12 +55,16 @@ public class SmarterElevatorEngine extends ScanElevatorEngine {
 			}
 		}
 		
-		priorityDown /= callPool.getAmountOfRequestsBelow(currentFloor);
-		priorityUp /= callPool.getAmountOfRequestsAbove(currentFloor);
-		
-		if(priorityUp > priorityDown) {
-			return Direction.UP;
+		if(priorityDown > 0) {
+			priorityDown /= callPool.getAmountOfRequestsBelow(currentFloor);
 		}
-		return Direction.DOWN;
+		if(priorityUp > 0) {
+			priorityUp /= callPool.getAmountOfRequestsAbove(currentFloor);
+		}
+		
+		if(priorityUp < priorityDown) {
+			return Direction.DOWN;
+		}
+		return Direction.UP;
 	}
 }

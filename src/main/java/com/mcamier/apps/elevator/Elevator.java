@@ -10,9 +10,10 @@ import spark.Response;
 import spark.Route;
 
 import com.mcamier.apps.elevator.engine.IElevatorEngine;
-import com.mcamier.apps.elevator.engine.ScanElevatorEngine;
+import com.mcamier.apps.elevator.engine.SmarterElevatorEngine;
 import com.mcamier.apps.elevator.request.CallRequest;
 import com.mcamier.apps.elevator.request.DestinationRequest;
+import com.mcamier.apps.elevator.utils.Command;
 import com.mcamier.apps.elevator.utils.Direction;
 
 /**
@@ -24,9 +25,8 @@ public class Elevator {
 	private static IElevatorEngine engine;
 
 	public static void main(String[] args) {
-		engine = new ScanElevatorEngine(6);
-//		lauchElevatorServer(Integer.parseInt(System.getenv("PORT")));
-		lauchElevatorServer(8666);
+		engine = new SmarterElevatorEngine(6);
+		lauchElevatorServer(Integer.parseInt(System.getenv("PORT")));
 	}
 	
 	public static void lauchElevatorServer(int port) {
@@ -93,9 +93,10 @@ public class Elevator {
 		get(new Route("/nextCommand") {
 			@Override
 			public Object handle(Request request, Response response) {
-				System.out.println("<==== nextCommand");
+				Command result = engine.getNextCommand();
+				System.out.println("<==== nextCommand :> " + result);
 				response.status(200);
-				return engine.getNextCommand();
+				return result;
 			}
 		});
 	}
