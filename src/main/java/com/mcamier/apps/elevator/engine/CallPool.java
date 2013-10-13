@@ -69,6 +69,13 @@ public final class CallPool {
 		return this.requests.get(index);
 	}
 	
+	/**
+	 * @return Wrap iterator methods of List<IRequest>
+	 */
+	public final Iterator<IRequest> iterator() {
+		return this.requests.iterator();
+	}
+	
 	
 	/**
 	 * @param index

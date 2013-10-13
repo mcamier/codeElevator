@@ -16,13 +16,13 @@ import com.mcamier.apps.elevator.utils.Direction;
 public class ScanElevatorEngine 
 	implements IElevatorEngine {
 
-	private final int totalFloors;
-	private int currentFloor;
+	protected final int totalFloors;
+	protected int currentFloor;
 	private boolean isDoorOpened;
 	
 	private Direction lastDirection;
 	
-	private CallPool callPool;
+	protected CallPool callPool;
 	
 	
 	/** Initialize the elevator for a specific amount of floors
@@ -156,7 +156,7 @@ public class ScanElevatorEngine
 	/**
 	 * @return
 	 */
-	private Command computeNextCommand() {
+	public Command computeNextCommand() {
 		if( !callPool.isEmpty() ) {
 			if (callPool.isRequestAt(currentFloor) ) {
 				callPool.removeRequestsAt(currentFloor);
@@ -179,7 +179,7 @@ public class ScanElevatorEngine
 	/**
 	 * @return
 	 */
-	private IRequest getATarget() {
+	public IRequest getATarget() {
 		IRequest targetFloor = null;
 		
 		switch (lastDirection) {
