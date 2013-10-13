@@ -25,7 +25,8 @@ public class Elevator {
 
 	public static void main(String[] args) {
 		engine = new ScanElevatorEngine(6);
-		lauchElevatorServer(Integer.parseInt(System.getenv("PORT")));
+//		lauchElevatorServer(Integer.parseInt(System.getenv("PORT")));
+		lauchElevatorServer(8666);
 	}
 	
 	public static void lauchElevatorServer(int port) {

@@ -11,6 +11,7 @@ import com.mcamier.apps.elevator.utils.Direction;
  */
 public interface IRequest {
 
+	
 	/**
 	 * @return the floor requested
 	 */
@@ -27,4 +28,9 @@ public interface IRequest {
 	 * @return
 	 */
 	public boolean isReachableWithDirectionFromPosition(Direction direction, int position);
+	
+	/**
+	 * @return
+	 */
+	public int getRawPriority();
 }

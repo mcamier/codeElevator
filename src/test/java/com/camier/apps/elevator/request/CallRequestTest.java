@@ -27,4 +27,10 @@ public class CallRequestTest {
 		request = new CallRequest(5, Direction.DOWN);
 		assertThat(request.getDirection()).isEqualTo(Direction.DOWN);
 	}
+	
+	@Test
+	public void getRawPriorityTest() {
+		request = new CallRequest(5, Direction.DOWN);
+		assertThat(request.getRawPriority()).isEqualTo(2);
+	}
 }

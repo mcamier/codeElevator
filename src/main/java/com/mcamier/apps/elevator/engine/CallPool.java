@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.mcamier.apps.elevator.request.DestinationRequest;
 import com.mcamier.apps.elevator.request.IRequest;
+import com.mcamier.apps.elevator.utils.Direction;
 
 /**
  * @author fufuuu
@@ -130,5 +131,43 @@ public final class CallPool {
 			}
 		}
 		return false;
+	}
+	
+	
+	/**
+	 * @return
+	 */
+	public final int getAmountOfRequestsAbove(int index) {
+		return getAmountOfRequestsTo(index, Direction.UP);
+	}
+	
+	
+	/**
+	 * @return
+	 */
+	public final int getAmountOfRequestsBelow(int index) {
+		return getAmountOfRequestsTo(index, Direction.DOWN);
+	}
+
+	
+	/**
+	 * @param direction
+	 * @return
+	 */
+	private final int getAmountOfRequestsTo(int index, Direction direction) {
+		int result = 0;
+		for(Iterator<IRequest> iter = requests.iterator() ; iter.hasNext();) {
+			IRequest request = iter.next();
+			if(Direction.UP == direction) {
+				if(request.getFloor() > index) {
+					result++;
+				}
+			} else if(Direction.DOWN == direction) {
+				if(request.getFloor() < index) {
+					result--;
+				}
+			}
+		}
+		return result;
 	}
 }

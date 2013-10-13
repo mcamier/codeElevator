@@ -16,7 +16,6 @@ public abstract class Request implements IRequest {
 	 */
 	private int atFloor;
 	
-	
 	public Request(final int atFloor) {
 		this.setFloor(atFloor);
 	}
@@ -68,5 +67,4 @@ public abstract class Request implements IRequest {
 		
 		return false;
 	}
-	
 }
