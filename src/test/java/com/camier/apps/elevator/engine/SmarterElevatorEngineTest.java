@@ -21,7 +21,7 @@ public class SmarterElevatorEngineTest {
 	
 	@Test
 	public void computeSimplePriorityTest() {
-		engine = new SmarterElevatorEngine(6);
+		engine = new SmarterElevatorEngine(6, 999);
 		engine.setCurrentFloor(1);
 		engine.call(new CallRequest(0, Direction.UP));
 		engine.haveToGoTo(new DestinationRequest(5));
@@ -32,7 +32,7 @@ public class SmarterElevatorEngineTest {
 	
 	@Test
 	public void SimpleTravelTest() {
-		engine = new SmarterElevatorEngine(6);
+		engine = new SmarterElevatorEngine(6, 999);
 		engine.setCurrentFloor(0);
 		engine.call(new CallRequest(2, Direction.UP));
 		assertThat(engine.getNextCommand()).isEqualTo(Command.UP);
@@ -48,7 +48,7 @@ public class SmarterElevatorEngineTest {
 	
 	@Test
 	public void computeHarderPriorityTest() {
-		engine = new SmarterElevatorEngine(6);
+		engine = new SmarterElevatorEngine(6, 999);
 		engine.setCurrentFloor(2);
 		engine.call(new CallRequest(1, Direction.UP));
 		engine.call(new CallRequest(4, Direction.DOWN));

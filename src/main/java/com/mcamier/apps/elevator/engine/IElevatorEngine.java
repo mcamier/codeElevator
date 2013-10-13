@@ -36,4 +36,22 @@ public interface IElevatorEngine {
 	 * Used to reset all internal properties
 	 */
 	public void reset();
+	
+	
+	/**
+	 * 
+	 */
+	public void userHasEntered();
+	
+	
+	/**
+	 * 
+	 */
+	public void userHasExited();
+	
+	
+	/**
+	 * @return true if nobody is contain is the elevator
+	 */
+	public boolean isEmpty();
 }

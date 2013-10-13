@@ -17,8 +17,10 @@ public class ScanElevatorEngine
 	implements IElevatorEngine {
 
 	protected final int totalFloors;
+	protected int capacity;
 	protected int currentFloor;
 	private boolean isDoorOpened;
+	protected int amountUser;
 	
 	private Direction lastDirection;
 	
@@ -28,8 +30,9 @@ public class ScanElevatorEngine
 	/** Initialize the elevator for a specific amount of floors
 	 * @param _totalFloors
 	 */
-	public ScanElevatorEngine(final int _totalFloors) {
+	public ScanElevatorEngine(final int _totalFloors, int aCapacity) {
 		totalFloors = _totalFloors;
+		capacity = aCapacity;
 		callPool = new CallPool();
 		reset();
 	}
@@ -130,12 +133,43 @@ public class ScanElevatorEngine
 	
 	
 	/* (non-Javadoc)
+	 * @see com.mcamier.apps.elevator.engine.IElevatorEngine#userHasEntered()
+	 */
+	@Override
+	public void userHasEntered() {
+		amountUser++;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see com.mcamier.apps.elevator.engine.IElevatorEngine#isEmpty()
+	 */
+	@Override
+	public boolean isEmpty() {
+		if(amountUser > 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see com.mcamier.apps.elevator.engine.IElevatorEngine#userHasExited()
+	 */
+	@Override
+	public void userHasExited() {
+		amountUser--;
+	}
+	
+	
+	/* (non-Javadoc)
 	 * @see com.mcamier.apps.elevator.IElevatorEngine#reset()
 	 */
 	@Override
 	public void reset() {
 		lastDirection = Direction.NONE;
 		callPool.clear();
+		amountUser = 0;
 		setCurrentFloor(0);
 		closeDoor();
 	}
@@ -158,6 +192,7 @@ public class ScanElevatorEngine
 	 */
 	public Command computeNextCommand() {
 		if( !callPool.isEmpty() ) {
+			// TODO check the capacity before open the door to pick up people in case of CallRequest
 			if (callPool.isRequestAt(currentFloor) ) {
 				callPool.removeRequestsAt(currentFloor);
 				return openDoor();

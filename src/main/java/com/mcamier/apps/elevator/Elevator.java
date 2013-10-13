@@ -25,7 +25,7 @@ public class Elevator {
 	private static IElevatorEngine engine;
 
 	public static void main(String[] args) {
-		engine = new ScanElevatorEngine(6);
+		engine = new ScanElevatorEngine(6,50);
 		lauchElevatorServer(Integer.parseInt(System.getenv("PORT")));
 	}
 	
@@ -76,6 +76,7 @@ public class Elevator {
 			@Override
 			public Object handle(Request request, Response response) {
 				System.out.println("<==== userHasEntered");
+				engine.userHasEntered();
 				response.status(200);
 				return response;
 			}
@@ -85,6 +86,7 @@ public class Elevator {
 			@Override
 			public Object handle(Request request, Response response) {
 				System.out.println("<==== userHasExited");
+				engine.userHasExited();
 				response.status(200);
 				return response;
 			}

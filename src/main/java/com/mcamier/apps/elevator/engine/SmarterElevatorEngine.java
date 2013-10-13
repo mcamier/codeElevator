@@ -15,8 +15,8 @@ import com.mcamier.apps.elevator.utils.Direction;
  */
 public class SmarterElevatorEngine extends ScanElevatorEngine {
 
-	public SmarterElevatorEngine(int _totalFloors) {
-		super(_totalFloors);
+	public SmarterElevatorEngine(int _totalFloors, int aCapacity) {
+		super(_totalFloors, aCapacity);
 	}
 
 	@Override
@@ -41,6 +41,7 @@ public class SmarterElevatorEngine extends ScanElevatorEngine {
 	
 	
 	public Direction getPriority() {
+		// TODO Add granularity to deal with limited lift's capacity
 		int priorityUp = 0, priorityDown = 0, priorityTemp = 0;
 		
 		for (Iterator<IRequest> iter = callPool.iterator(); iter.hasNext();) {
